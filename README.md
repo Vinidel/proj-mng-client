@@ -1,6 +1,27 @@
 # proj-mng-client
 SPA Client for proj-mng
 
+## Instrunctions
+ - `npm install`
+ - `npm start` 
+ ```
+ It will run on its own server on http://localhost:3000
+ If the server has been started correctly then two users can be used to login into the app
+ ```
+
+## Login 
+```
+  Admin 
+  user: vini@admin.com
+  password: fakepassword
+```
+
+```
+  Project Manager 
+  user: vini@pm.com
+  password: fakepassword
+```
+
 ## Dependencies
  - NodeJs
  - proj-mgn server needs to be up and running
@@ -8,18 +29,7 @@ SPA Client for proj-mng
 ## Start the App
  - `npm start` will run on its own server
 
-## Login 
-- Admin 
-```
-  user: vini@admin.com
-  password: fakepassword
-```
 
-- Project Manager 
-```
-  user: vini@pm.com
-  password: fakepassword
-```
 
 ## Things that need to be improved/done
  - Encrypt password before sending it
