@@ -16,10 +16,10 @@ class ListComponent extends Component {
                   return (<tr key={i}>
                   <td>{item.name}</td>
                   <td><div className="btn-container">
-            <button type="button" onClick={() => this.props.handleDelete(item.id)} className="btn btn-danger">Delete</button>
+            <button type="button" onClick={() => this.props.handleDelete(item)} className="btn btn-danger">Delete</button>
           </div>
           <div className="btn-container">
-            <button type="button" onClick={() => this.props.handleEdit(item.id)} className="btn btn-success">Edit</button>
+            <button type="button" onClick={() => this.props.handleEdit(item)} className="btn btn-success">Edit</button>
           </div></td>
                 </tr>)
                 })

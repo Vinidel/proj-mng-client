@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import ListComponent from './ListComponent';
+import AddUserComponent from './AddUserComponent';
+import EditUserComponent from './EditUserComponent';
 import SpinnerComponent from './SpinnerComponent';
-import {deleteUser, getUsers, postUser} from '../services';
+import {deleteUser, getUsers, postUser, patchUser} from '../services';
 import Dropdown from 'react-dropdown'
 import 'react-dropdown/style.css'
 
@@ -10,11 +12,10 @@ class UserComponent extends Component {
     constructor() {
         super();
         this.state = {
+            showEdit: false,
             fetching: true,
             users: [],
-            name: '',
-            password: '',
-            email: '',
+            user: {},
             role: '',
             selectedOption: {label: 'Select'},
             roles: [{name: 'Admin', value: 'ADMIN'}, {name: 'Project manager', value: 'PROJECT_MANAGER'}]
@@ -30,17 +31,23 @@ class UserComponent extends Component {
         .then((users) => this.setState({users, fetching: false}))
     }
     
-    handleDeleteUser = (userId) => {
-      return deleteUser(userId)
+    handleDeleteUser = (user) => {
+      return deleteUser(user.id)
         .then(() => this.getUsers())
     }
 
-    handleSubmit = (e) => {
-      e.preventDefault();
-      return postUser({name: this.state.name, email: this.state.email, password: this.state.password, role: this.state.role})
-        .then((res) => console.log('Success'))
-        .then(this.getUsers)
-        .catch(e => console.log('Error', e))
+  handlePostUser = (user) => {
+    return postUser(user)
+      .then((res) => console.log('Success'))
+      .then(this.getUsers)
+      .catch(e => console.log('Error', e))
+  }
+
+  handlePatchUser = (user) => {
+    return patchUser(user)
+      .then((res) => console.log('Success'))
+      .then(this.getUsers)
+      .catch(e => console.log('Error', e))
   }
 
   handleOnChangeName = (event) => {
@@ -59,11 +66,15 @@ class UserComponent extends Component {
     this.setState({role: role.value});
   }
 
+  handleEdit = (user) => {
+    this.setState({showEdit: true, user});
+  }
+
   renderSpinner = () => (<SpinnerComponent />)
 
   renderUserList = () => {
     const users = this.state.users;
-    return (<ListComponent items={users} handleDelete={this.handleDeleteUser}/>)
+    return (<ListComponent items={users} handleDelete={this.handleDeleteUser} handleEdit={this.handleEdit}/>)
   }
 
   renderDropdown = (roles) => {
@@ -71,34 +82,18 @@ class UserComponent extends Component {
     return (<Dropdown options={options} onChange={this.handleOnChangeRole}  value={this.state.selectedOption} />)
   }
 
+  renderAddUserComponent = () => {
+    return (<AddUserComponent handlePost={this.handlePostUser}/>)
+  }
+
+  renderEditUserComponent = () => {
+    return (<EditUserComponent handlePatch={this.handlePatchUser} user={this.state.user}/>)
+  }
 
   render() {
       return (
         <div className="App-tile">
-          <form>
-            <div className="form-group">
-              <label>Name</label>
-              <input type="text" className="form-control" placeholder="Enter name" onChange={this.handleOnChangeName}/>
-            </div>
-            <div className="form-group">
-            <div className="form-group">
-              <label >Email</label>
-              <input type="email" className="form-control" placeholder="Enter email" onChange={this.handleOnChangeEmail}  name="email"/>
-            </div>
-            <div className="form-group">
-              <label >Password</label>
-              <input type="password" className="form-control" placeholder="Enter password"onChange={this.handleOnChangePassword}  name="password" />              
-            </div>
-            </div>
-            <div className="form-group form-check">
-            <label >Role</label>
-              {this.state.roles.length ? this.renderDropdown(this.state.roles) : ''}
-            </div>
-            <div className="btn-container">
-            <button type="button" onClick={this.handleSubmit} className="btn btn-info">Save</button>
-          </div>
-          </form>
-
+          {this.state.showEdit ? this.renderEditUserComponent() : this.renderAddUserComponent()}
           <br />
           {this.state.fetching ? this.renderSpinner() : ''}
           {this.state.users ?  this.renderUserList(): ''}

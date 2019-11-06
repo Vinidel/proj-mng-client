@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
 import ListComponent from './ListComponent';
+import AddProjectComponent from './AddProjectComponent';
+import EditProjectComponent from './EditProjectComponent';
 import SpinnerComponent from './SpinnerComponent';
 import {getProjects} from '../services';
-import {deleteProject, getUsers, postProject} from '../services';
-import Dropdown from 'react-dropdown'
+import {deleteProject, getUsers, postProject, patchProject} from '../services';
 import {ADMIN_ROLE} from '../constants';
 
 import 'react-dropdown/style.css'
@@ -14,100 +15,81 @@ class ProjectComponent extends Component {
     constructor() {
         super();
         this.state = {
+            showEdit: false,
             fetching: true,
             projects: [],
             users: [],
-            name: '',
-            description: '',
-            userId: 0,
-            selectedOption: {label: 'Select'}
+            project: {}
         }
     }
 
-    componentWillMount() {
-      this.getMyProjects()
-      this.props.role === ADMIN_ROLE && this.getUsers();
-    }
-
-    getUsers = () => {
-      return getUsers()
-        .then((users) => this.setState({users}))
-    }
-    
-    deleteProject = (projectId) => {
-      return deleteProject(projectId)
-        .then(() => this.getMyProjects())
-    }
-
-    getMyProjects = () => {
-      return getProjects()
-        .then(projects => {
-          return this.setState({projects, fetching: false})
-        });
-    }
-
-    handleSubmit = (e) => {
-      e.preventDefault();
-      return postProject({name: this.state.name, description: this.state.description, UserId: this.state.userId})
-        .then((res) => console.log('Success'))
-        .then(this.getMyProjects)
-        .catch(e => console.log('Error', e))
+  componentWillMount() {
+    this.getMyProjects()
+    this.props.role === ADMIN_ROLE && this.getUsers();
   }
 
-  handleOnChangeDesc = (event) => {
-    this.setState({description: event.target.value});
+  getUsers = () => {
+    return getUsers()
+      .then((users) => this.setState({users}))
+  }
+  
+  deleteProject = (project) => {
+    return deleteProject(project.id)
+      .then(() => this.getMyProjects())
   }
 
-  handleOnChangeName = (event) => {
-    this.setState({name: event.target.value});
+  getMyProjects = () => {
+    return getProjects()
+      .then(projects => {
+        return this.setState({projects, fetching: false})
+      });
   }
 
-  handleOnChangeUser = (user) => {
-    this.setState({userId: user.value, selectedOption: user});
+  handlePostProject = (project) => {
+    return postProject(project)
+      .then((res) => console.log('Success'))
+      .then(this.getMyProjects)
+      .catch(e => console.log('Error', e))
+  }
+
+  handlePatchProject = (projectId, project) => {
+    return patchProject(projectId, project)
+      .then((res) => console.log('Success'))
+      .then(this.getMyProjects)
+      .catch(e => console.log('Error', e))
   }
 
   renderSpinner = () => (<SpinnerComponent />)
 
+  handleEdit = (project) => {
+    console.log('Clicked')
+    this.setState({showEdit: true, project});
+  }
+
   renderProjectList = () => {
     const projects = this.state.projects;
-    return (<ListComponent items={projects} handleDelete={this.deleteProject}/>)
+    return (<ListComponent items={projects} handleDelete={this.deleteProject} handleEdit={this.handleEdit}/>)
   }
 
-  renderDropdown = (users) => {
-    const options = users.map((user) => ({value: user.id, label: user.name}))
-    return (<Dropdown options={options} onChange={this.handleOnChangeUser}  value={this.state.selectedOption} />)
+  renderAddProjectComponent = () => {
+    return (<AddProjectComponent handlePost={this.handlePostProject} users={this.state.users}/>)
   }
 
-  renderForm = () => {
-    return (
-      <form>
-      <div className="form-group">
-        <label>Name</label>
-        <input type="text" className="form-control" placeholder="Enter name" onChange={this.handleOnChangeName}/>
-      </div>
-      <div className="form-group">
-      <div className="form-group">
-        <label >Description</label>
-        <input type="text" className="form-control" placeholder="Enter description" onChange={this.handleOnChangeDesc}/>
-      </div>
-      </div>
-      <div className="form-group form-check">
-      <label >User</label>
-        {this.state.users.length ? this.renderDropdown(this.state.users) : ''}
-      </div>
-      <div className="btn-container">
-      <button type="button" onClick={this.handleSubmit} className="btn btn-info">Save</button>
-    </div>
-    </form>
-    )
+  renderEditProjectComponent = () => {
+    return (<EditProjectComponent handlePatch={this.handlePatchProject} users={this.state.users} project={this.state.project}/>)
   }
 
+  renderAdminSection = () => {
+    console.log('Is Admin ', this.state.showEdit)
+   return this.state.showEdit ?  this.renderEditProjectComponent() : this.renderAddProjectComponent();
+  }
 
+  
   render() {
+    console.log('Rendered')
       return (
         <div className="App-tile">
-         
-          {this.props.role === ADMIN_ROLE ? this.renderForm() : ''}
+          {this.props.role === ADMIN_ROLE ? this.renderAdminSection() : ''}
           <br />
           {this.state.fetching ? this.renderSpinner() : ''}
           {this.state.projects?  this.renderProjectList(): ''}
