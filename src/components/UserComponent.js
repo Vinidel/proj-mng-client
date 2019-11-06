@@ -1,10 +1,12 @@
 import React, { Component } from 'react'
+import Dropdown from 'react-dropdown'
 import ListComponent from './ListComponent';
 import AddUserComponent from './AddUserComponent';
 import EditUserComponent from './EditUserComponent';
 import SpinnerComponent from './SpinnerComponent';
 import {deleteUser, getUsers, postUser, patchUser} from '../services';
-import Dropdown from 'react-dropdown'
+import {ADMIN_ROLE} from '../constants';
+
 import 'react-dropdown/style.css'
 
 class UserComponent extends Component {
@@ -74,7 +76,7 @@ class UserComponent extends Component {
 
   renderUserList = () => {
     const users = this.state.users;
-    return (<ListComponent items={users} handleDelete={this.handleDeleteUser} handleEdit={this.handleEdit}/>)
+    return (<ListComponent items={users} handleDelete={this.handleDeleteUser} handleEdit={this.handleEdit} role={ADMIN_ROLE}/>)
   }
 
   renderDropdown = (roles) => {

@@ -38,6 +38,11 @@ class App extends Component {
     this.setState({showProjects: setTab})
   }
 
+  handleLogout = (tab) => {
+    window.localStorage.removeItem('token');
+    this.setState({token: '', role: ''});
+  }
+
   renderLogin = () => (<LoginComponent setToken={this.handleToken}/>)
   renderProjects = () => (<ProjectComponent role={this.state.role}/>)
   renderUsers = () => (<UserComponent />)

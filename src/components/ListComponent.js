@@ -1,8 +1,24 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types';
+import {ADMIN_ROLE} from '../constants';
 
 class ListComponent extends Component {
 
+
+    renderAdminSection = (item) => {
+      if (this.props.role === ADMIN_ROLE) {
+        return (
+          <span>
+            <div className="btn-container">
+              <button type="button" onClick={() => this.props.handleDelete(item)} className="btn btn-danger">Delete</button>
+            </div>
+            <div className="btn-container">
+              <button type="button" onClick={() => this.props.handleEdit(item)} className="btn btn-success">Edit</button>
+            </div>
+          </span>
+          );
+      }
+    }
     renderTableContent = (items) => {
       return (
         <table className="table table-striped">
@@ -15,12 +31,7 @@ class ListComponent extends Component {
                 items.map((item, i) => {
                   return (<tr key={i}>
                   <td>{item.name}</td>
-                  <td><div className="btn-container">
-            <button type="button" onClick={() => this.props.handleDelete(item)} className="btn btn-danger">Delete</button>
-          </div>
-          <div className="btn-container">
-            <button type="button" onClick={() => this.props.handleEdit(item)} className="btn btn-success">Edit</button>
-          </div></td>
+                  <td>{this.renderAdminSection(item)}</td>
                 </tr>)
                 })
                }
@@ -53,6 +64,7 @@ ListComponent.defaultProps = {
 ListComponent.propTypes = {
   handleDelete: PropTypes.func,
   handleEdit: PropTypes.func,
+  role: PropTypes.string,
   items: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.number,
     name: PropTypes.string

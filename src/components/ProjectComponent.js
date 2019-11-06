@@ -68,7 +68,7 @@ class ProjectComponent extends Component {
 
   renderProjectList = () => {
     const projects = this.state.projects;
-    return (<ListComponent items={projects} handleDelete={this.deleteProject} handleEdit={this.handleEdit}/>)
+    return (<ListComponent items={projects} handleDelete={this.deleteProject} handleEdit={this.handleEdit} role={this.props.role}/>)
   }
 
   renderAddProjectComponent = () => {
