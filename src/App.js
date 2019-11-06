@@ -38,12 +38,19 @@ class App extends Component {
     this.setState({showProjects: setTab})
   }
 
-  handleLogout = (tab) => {
+  handleLogout = () => {
     window.localStorage.removeItem('token');
     this.setState({token: '', role: ''});
   }
 
   renderLogin = () => (<LoginComponent setToken={this.handleToken}/>)
+  renderLogout = () => {
+    return (<div className="logout-container">
+            <div className="btn-container float-right">
+              <button type="button" onClick={this.handleLogout} className="btn btn-danger">Logout</button>
+            </div>
+          </div>
+  )}
   renderProjects = () => (<ProjectComponent role={this.state.role}/>)
   renderUsers = () => (<UserComponent />)
   renderNavTab = () => (<TabComponent handleSelectTab={this.handleTabChange} role={this.state.role}/>)
@@ -54,6 +61,7 @@ class App extends Component {
     return (
       <div className="App">
       <TitleComponent />
+      {this.state.token ? this.renderLogout() : ''}
       {this.state.token ? this.renderNavTab() : ''}
       <div className="App-content">
       {this.state.token ? this.renderSelectedSection() : this.renderLogin()}

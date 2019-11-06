@@ -35,10 +35,10 @@ SPA Client for proj-mng
  - Encrypt password before sending it
  - Error handling
  - Required fields handling
- - Logout
  - Side effects when Deleted (remove data from form and refresh)
  - Side effects when Edit (remove data from)
  - Better UI, current one is pretty crappy
+ - No unit tests
 
  ## Bug found
  - Dropdown might have a weird behaviour if user is null for the previously selected project
